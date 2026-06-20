@@ -1,9 +1,0 @@
-gradio
-pandas
-numpy
-matplotlib
-scikit-learn
-tensorflow
-prophet
-seaborn
-plotly
