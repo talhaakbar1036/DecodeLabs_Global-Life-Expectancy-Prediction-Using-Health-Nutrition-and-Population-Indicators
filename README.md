@@ -1,132 +1,101 @@
 # Global Life Expectancy Prediction
 
-A professional data science repository for predicting life expectancy using global health, nutrition, and population indicators from 2015 to 2024. This project combines data preparation, exploratory analysis, machine learning modeling, and an interactive Gradio web application to deliver actionable forecasting insights.
+Predicting infant mortality and health expenditure patterns from World Bank health, nutrition, and population indicators (2015–2024), with a Pakistan-specific health expenditure forecast.
 
-## Project Overview
+## Overview
 
-This repository is designed to demonstrate a complete analytical workflow:
+This project works through three modeling tasks on the same World Bank dataset:
 
-- Data ingestion and cleaning for global health indicators
-- Exploratory data analysis (EDA) to uncover trends and correlations
-- Feature engineering for machine learning readiness
-- Supervised learning and time series forecasting for health expenditure and related outcomes
-- A deployable Gradio app for interactive prediction and visual exploration
+1. **Infant mortality regression** — predicting a country's infant mortality rate (per 1,000 live births) from health system and nutrition indicators.
+2. **Health expenditure classification** — predicting whether a country spends above or below the global median on health (% of GDP) based on demographic and disease-burden indicators.
+3. **Pakistan health expenditure forecasting** — projecting Pakistan's health expenditure (% of GDP) through 2026 using ARIMA, Prophet, and LSTM.
 
-The project includes a focused case study for Pakistan, using historical health expenditure data to support forecasting.
+The full workflow — data cleaning, exploratory analysis, model comparison, hyperparameter tuning, and forecasting — is in the notebook. A small Gradio app exposes the infant mortality model as an interactive demo.
 
-## Online Resources
+## Results
 
-The core data and model artifacts are available directly in the GitHub repository.
+**Infant mortality regression** (test set, after hyperparameter tuning)
 
-### Dataset files
+| Model | RMSE | MAE | R² |
+|---|---|---|---|
+| Linear Regression | 8.48 | 5.81 | 0.73 |
+| Neural Network | 8.14 | 5.32 | 0.75 |
+| XGBoost | 5.91 | 3.08 | 0.87 |
+| **Random Forest (tuned)** | **5.47** | **3.14** | **0.89** |
 
-- `dataset/de46020d-9719-41d6-a517-0a7fb19791b1_Data (1).csv`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/dataset/de46020d-9719-41d6-a517-0a7fb19791b1_Data%20(1).csv
-- `dataset/de46020d-9719-41d6-a517-0a7fb19791b1_Data.csv`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/dataset/de46020d-9719-41d6-a517-0a7fb19791b1_Data.csv
+Random Forest was selected as the final model and saved for reuse.
 
-### Saved machine learning models
+**Health expenditure classification** (test set)
 
-- `saved_ml_models/arima_pakistan_health_expenditure.pkl`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/saved_ml_models/arima_pakistan_health_expenditure.pkl
-- `saved_ml_models/lstm_pakistan_health_expenditure.h5`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/saved_ml_models/lstm_pakistan_health_expenditure.h5
-- `saved_ml_models/prophet_pakistan_health_expenditure.json`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/saved_ml_models/prophet_pakistan_health_expenditure.json
-- `saved_ml_models/random_forest_classifier_health_expenditure.pkl`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/saved_ml_models/random_forest_classifier_health_expenditure.pkl
-- `saved_ml_models/random_forest_regressor_infant_mortality.pkl`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/saved_ml_models/random_forest_regressor_infant_mortality.pkl
+| Model | Accuracy | ROC-AUC |
+|---|---|---|
+| Logistic Regression | 0.60 | 0.67 |
+| Random Forest | 0.60 | 0.50 |
+| SVM | 0.40 | 0.33 |
 
-### Prediction output files
+Classification performance is modest across all models — the dataset is small after filtering for complete feature rows, and the features used (population growth, urbanization, infant mortality, tuberculosis incidence, diabetes prevalence) only partially explain health spending levels. This is noted here rather than smoothed over, since it's a real limitation of the current feature set.
 
-- `ml_prediction/health_expenditure_classification_predictions.csv`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/ml_prediction/health_expenditure_classification_predictions.csv
-- `ml_prediction/infant_mortality_predictions.csv`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/ml_prediction/infant_mortality_predictions.csv
-- `ml_prediction/pakistan_health_expenditure_forecasts.csv`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/ml_prediction/pakistan_health_expenditure_forecasts.csv
+**Pakistan health expenditure forecast (% of GDP)**
 
-### Gradio app and UI resources
+| Year | ARIMA | Prophet | LSTM |
+|---|---|---|---|
+| 2024 | 2.18 | 2.93 | 2.68 |
+| 2025 | 2.10 | 2.95 | 2.75 |
+| 2026 | 2.08 | — | 2.78 |
 
-The interactive app is implemented in `global-life-expectancy-gradio-app/` and can be accessed directly on GitHub.
+The three models diverge meaningfully on direction (ARIMA trends down, Prophet and LSTM trend flat to slightly up), which is worth keeping in mind when reading the forecast — with only nine years of annual data, none of these models has much to work with.
 
-- App directory: https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/tree/main/global-life-expectancy-gradio-app
-- `global-life-expectancy-gradio-app/requirements.txt`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/requirements.txt
-- `global-life-expectancy-gradio-app/app.py`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/app.py
-- `global-life-expectancy-gradio-app/README.md`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/README.md
-- `global-life-expectancy-gradio-app/assets/animations.js`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/assets/animations.js
-- `global-life-expectancy-gradio-app/assets/styles.css`
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/assets/styles.css
-- App data and models:
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/data/dataset/de46020d-9719-41d6-a517-0a7fb19791b1_Data.csv
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/data/ml_prediction/infant_mortality_predictions.csv
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/data/ml_prediction/pakistan_health_expenditure_forecasts.csv
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/data/saved_ml_models/prophet_pakistan_health_expenditure.json
-  - https://github.com/talhaakbar1036/Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-/blob/main/global-life-expectancy-gradio-app/data/saved_ml_models/lstm_pakistan_health_expenditure.h5
+## Repository structure
 
-## Dataset Description
+```
+.
+├── Global_Life_Expectancy_Prediction_Using_Health_Nutrition_and_Population_Indicators_2015_2024.ipynb
+├── dataset/
+│   └── de46020d-9719-41d6-a517-0a7fb19791b1_Data.csv      World Bank source data
+├── saved_ml_models/
+│   ├── random_forest_regressor_infant_mortality.pkl
+│   ├── random_forest_classifier_health_expenditure.pkl
+│   ├── arima_pakistan_health_expenditure.pkl
+│   ├── prophet_pakistan_health_expenditure.json
+│   └── lstm_pakistan_health_expenditure.h5
+├── ml_prediction/
+│   ├── infant_mortality_predictions.csv
+│   ├── health_expenditure_classification_predictions.csv
+│   └── pakistan_health_expenditure_forecasts.csv
+├── app/
+│   ├── app.py            Gradio demo for the infant mortality model
+│   ├── requirements.txt
+│   └── data/              copies of the dataset and model needed by the app
+└── LICENSE
+```
 
-The dataset contains country-level health and socio-economic indicators such as:
+## Dataset
 
-- Health expenditure per capita
-- Infant mortality rate
-- Nutrition and food security metrics
-- Population totals and demographics
-- Additional public health indicators used for modeling
+World Bank Health, Nutrition and Population Statistics, 2015–2024, covering indicators such as:
 
-These features support both classification and regression tasks for forecasting key outcomes.
+- Current health expenditure (% of GDP)
+- Physicians and hospital beds per 1,000 people
+- Infant mortality rate (per 1,000 live births)
+- Tuberculosis incidence and diabetes prevalence
+- Access to basic drinking water
+- Population growth and urbanization rates
 
-## Data Source and Forecast Fix
+The raw file is in World Bank's wide format (one row per indicator per country, one column per year) and is reshaped into a country-year table during preprocessing. Indicators are reported on different schedules across countries, so the notebook handles missing values per task rather than dropping any country outright.
 
-This project uses World Bank data for East countries covering the years 2015 through 2024. A duplicate dataset file was removed to save space and avoid confusion.
+## Running the app
 
-The Gradio app now supports health expenditure forecasting for the next years 2025 and 2026 using the precomputed forecast CSV. If you enter a future year in the app, it will return the forecast value for that year when available. Forecasting beyond 2026 is not supported until the forecast dataset is extended.
+```bash
+cd app
+pip install -r requirements.txt
+python app.py
+```
 
-## Machine Learning Components
+Open `http://localhost:7860`. Pick a country to auto-fill the sliders with its most recently reported values, adjust as needed, and predict.
 
-Included workflows:
+## Running the notebook
 
-- Time series forecasting for Pakistan health expenditure using ARIMA, LSTM, and Prophet
-- Classification of health expenditure categories using Random Forest
-- Regression modeling of infant mortality using Random Forest
-
-Saved model files are available under `saved_ml_models/` and can be reused with the app or additional analysis scripts.
-
-## How to Run
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd Global-Life-Expectancy-Prediction-Using-Health-Nutrition-and-Population-Indicators-2015-2024-
-   ```
-
-2. Install the app dependencies:
-   ```bash
-   pip install -r global-life-expectancy-gradio-app/requirements.txt
-   ```
-
-3. Start the Gradio app:
-   ```bash
-   cd global-life-expectancy-gradio-app
-   python app.py
-   ```
-
-4. Open `http://localhost:7860` in a browser.
-
-## Repository Structure
-
-- `dataset/` - main dataset CSV files used for training and analysis
-- `ml_prediction/` - model prediction and forecast output CSV files
-- `saved_ml_models/` - stored trained models and serialized artifacts
-- `global-life-expectancy-gradio-app/` - Gradio application, UI assets, and app-specific data
-- `README.md` - this documentation file
-- `LICENSE` - project license
+The notebook expects the dataset CSV in `dataset/`. Model artifacts are written to `saved_ml_models/` and predictions to `ml_prediction/`. Cells were originally run on Google Colab with paths pointed at Google Drive; update the path variables near the top of the data-loading and model-saving cells if running locally.
 
 ## License
 
-This project is released under the MIT License. See `LICENSE` for details.
+MIT — see [LICENSE](LICENSE).
